@@ -13,15 +13,12 @@ app.use(cors(corsOptions))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(pino)
 
-app.get("/api/url", (req, res) => {
-  const videoId = {
-    videoID: req.query.url
-  }
-
-  api.getSubtitles(videoId).then(captions => {
-    const captionString = JSON.stringify({ captions: captions })
+app.get("/api/id", (req, res) => {
+  api.getSubtitles({ videoID: req.query.id }).then(captions => {
     res.setHeader("Content-Type", "application/json")
-    res.send({ captions: captionString })
+    res.send({
+      captions: JSON.stringify({ captions: captions })
+    })
   })
 })
 
