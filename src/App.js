@@ -1,15 +1,13 @@
 import React, { Component } from "react"
 import Video from "./components/Video"
+import Form from "./components/Form"
 import getId from "./components/youtubeId"
 import "./App.css"
 
 class App extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      id: "",
-      captions: ""
-    }
+    this.state = { isFormSubmit: false }
   }
 
   handleChange = event => {
@@ -18,23 +16,14 @@ class App extends Component {
     })
   }
 
-  handleSubmit = event => {
-    event.preventDefault()
-    fetch(`/api/id?id=${encodeURIComponent(this.state.id)}`)
-      .then(response => response.json())
-      .then(state => this.setState(state))
-  }
-
   render() {
     return (
       <div className="App">
-        <form onSubmit={this.handleSubmit}>
-          <label htmlFor="url">Enter YouTube URL:</label>
-          <input id="url" type="text" onChange={this.handleChange} />
-          <button type="submit">Submit</button>
-        </form>
-        <p>{this.state.captions}</p>
-        <Video id={this.state.id} />
+        {this.state.isFormSubmit ? (
+          <Video id={this.state.id} />
+        ) : (
+          <Form handleChange={this.handleChange} id={this.state.id} />
+        )}
       </div>
     )
   }
