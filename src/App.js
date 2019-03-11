@@ -16,13 +16,25 @@ class App extends Component {
     })
   }
 
+  handleSubmit = event => {
+    event.preventDefault()
+    this.setState({ isFormSubmit: true })
+    fetch(`/api/id?id=${encodeURIComponent(this.state.id)}`)
+      .then(response => response.json())
+      .then(state => this.setState(state))
+  }
+
   render() {
     return (
       <div className="App">
         {this.state.isFormSubmit ? (
           <Video id={this.state.id} />
         ) : (
-          <Form handleChange={this.handleChange} id={this.state.id} />
+          <Form
+            handleChange={this.handleChange}
+            handleSubmit={this.handleSubmit}
+            id={this.state.id}
+          />
         )}
       </div>
     )
