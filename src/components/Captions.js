@@ -1,11 +1,33 @@
-import React from "react"
+import React, { Component } from "react"
+// import parseCaptions from "./parseCaptions"
 
-const captionLog = captions => {
-  console.log("yay", captions)
+class Captions extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      word: "",
+      soundEffect: ''
+    }
+  }
+
+  // setWord = captions => {
+  //   parseCaptions(captions)
+  // }
+
+  // this.props.captions[0].text
+
+  render() {
+    return (
+      <div>
+        <div className="captions">
+          {this.state.word}
+        </div>
+        <div className="sound-effects">
+          {this.state.soundEffect}
+        </div>
+      </div>
+    )
+  }
 }
 
-// const Captions = props => {
-//   return <p>Hello</p>
-// }
-
-export default captionLog
+export default Captions
