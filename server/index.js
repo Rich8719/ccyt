@@ -16,6 +16,7 @@ app.use(pino)
 app.get("/api/id", (req, res) => {
   api.getSubtitles({ videoID: req.query.id }).then(captions => {
     res.setHeader("Content-Type", "application/json")
+    console.log(captions)
     res.send(captions)
   })
 })
