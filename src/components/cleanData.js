@@ -1,6 +1,5 @@
 // Returns captions and soundEffect arrays, stripped of special characters, and adds newspeaker boolean to captions.
 
-
 // data
 let data = [{
   start: '1.084',
@@ -193,74 +192,61 @@ let data = [{
   text: 'because it\'s time to catch\nthis disco bastard.'
 }]
 
-// const replace = element.text.replace(/\n/g, " ")
-
-const allSpeakers = () => {
-  // Use All: to create function for all speakers
-}
-
-//removes items in subtitles marked in [sound] and returns new array of sounds and time
-const getSounds = (data) => {
-  // let soundEffect = []
-
-    // data.filter(snipWord(element.text, ))
-    // https://medium.com/front-end-weekly/stop-array-foreach-and-start-using-filter-map-some-reduce-functions-298b4dabfa09
-  
-  // data.element.text.filter(sound => snipWord(sound, "[", "]"))
-  
-  // data.forEach(element => {
-  //   soundEffect.push({
-  //     sound: snipWord(element.text, "[", "]")
-  //   })
-  // })
-  // console.log(soundEffect)
-
-  // let newData = soundEffect.filter(function (sound) {
-  //   return sound !== undefined
-  // })
-
-  // console.log(soundEffect[0].sound)
-  
-  // let newData = data.filter(text => text === undefined)
-  
-  
-  // removeCharacters(data, '[]') //need regex
-}
-
 //returns word between two characters
-
 const snipWord = (str, firstChar, secondChar) => {
   if (str.indexOf(firstChar) !== -1 && str.indexOf(secondChar) !== -1) {
-    return str.substring(str.indexOf(firstChar), str.indexOf(secondChar) + 1)
+    return str.slice(str.indexOf(firstChar), str.indexOf(secondChar) + 1)
   }
 }
 
-const addNewSpeakerElement = () => {
-  //Conditional. Checks if hyphen is at the start of an element in the srt file, indicating new speaker notation. if not new speaker returns null.
-  //adds to script array. Everytime "-" appears in srt, if returns a boolean newSpeaker: true or false. 
-}
-
 // removes unwanted characters from text
-const removeCharacters = (data, characters) => {
-  data.forEach(element => {
-    element.text = element.text.replace(characters, "")
+const removeCharacters = (element, findCharacter, replaceCharacters, replaceWith) =>
+  (element.indexOf(findCharacter) > -1) ?
+    element.replace(replaceCharacters, replaceWith) :
+    element
+
+//returns sound array with start times and duration
+const getSounds = (data) => {
+  const soundItems = data.filter(element => element.text.indexOf('[') > -1)
+  let soundArray = []
+
+  return soundItems.forEach(element => {
+    soundArray.push({
+      sound: snipWord(element.text, "[", "]"),
+      start: element.start,
+      dur: element.dur
+    })
   })
 }
 
-getSounds(data)
-// console.log(data)
+// "- ", or "all:" indicates a new speaker in json. This function adds newSpeaker boolean to words array.
+const addNewSpeakerElement = data => {
+  data.forEach(element => {
+    (element.text.indexOf("- ") > -1) | (element.text.indexOf("all:") > -1)
+      ? (element.newSpeaker = true)
+      : (element.newSpeaker = false)
+  })
+}
 
-// const data = captions => {
-//   const data = []
-//   console.log(captions);
-  
-//   captions.forEach(element => {
-//     const text = element.text
-//     data.push({
-//       text: text
-//     })
-//   })
-//   return data
-// }
+//need reformatting
+const formatWords = (data) => {
+  let words = []
 
-// export default data
+  data.forEach(element => {
+    const removeSounds = removeCharacters(element.text, "[", /\[(.*?)\]\s/, "")
+    const removeBreaks = removeCharacters(removeSounds, "\n", "\n", " ")
+    const removeHyphens = removeCharacters(removeBreaks, "- ", "- ", "")
+    const removeAll = removeCharacters(removeHyphens, "all:", "all:", "") //All refers to notation in captions for all speakers
+    const removeDoubleHypens = removeCharacters(removeAll, '--', '--', "") //double hyphens come before "all." regex removes items that start and end --
+    const word = removeDoubleHypens
+
+    words.push({
+      text: word,
+      start: element.start,
+      dur: element.dur
+    })
+  })
+
+  words = words.filter(element => element.text.length !== 0) //removes empty text elements
+  return words
+}
