@@ -201,35 +201,24 @@ const snipWord = (str, firstChar, secondChar) => {
 
 // removes unwanted characters from text
 const removeCharacters = (element, findCharacter, replaceCharacters, replaceWith) =>
-  (element.indexOf(findCharacter) > -1) ?
-    element.replace(replaceCharacters, replaceWith) :
-    element
+  (element.indexOf(findCharacter) > -1)
+    ? element.replace(replaceCharacters, replaceWith)
+    : element
 
-//returns sound array with start times and duration
-const getSounds = (data) => {
-  const soundItems = data.filter(element => element.text.indexOf('[') > -1)
-  let soundArray = []
-
-  return soundItems.forEach(element => {
-    soundArray.push({
-      sound: snipWord(element.text, "[", "]"),
-      start: element.start,
-      dur: element.dur
-    })
-  })
-}
-
-// "- ", or "all:" indicates a new speaker in json. This function adds newSpeaker boolean to words array.
+// "- ", "both", or "all:" indicates a new speaker in json. This function adds newSpeaker boolean to words array.
 const addNewSpeakerElement = data => {
   data.forEach(element => {
-    (element.text.indexOf("- ") > -1) | (element.text.indexOf("all:") > -1)
+    (element.text.indexOf("- ") > -1) |
+      (element.text.indexOf("all:") > -1) |
+      (element.text.indexOf("both:") > -1)
       ? (element.newSpeaker = true)
       : (element.newSpeaker = false)
   })
+  return data
 }
 
 //need reformatting
-const formatWords = (data) => {
+const deleteSpecialChars = (data) => {
   let words = []
 
   data.forEach(element => {
@@ -240,13 +229,65 @@ const formatWords = (data) => {
     const removeDoubleHypens = removeCharacters(removeAll, '--', '--', "") //double hyphens come before "all." regex removes items that start and end --
     const word = removeDoubleHypens
 
-    words.push({
-      text: word,
+   words.push({
+      text: word.trim(),
+      start: element.start,
+      dur: element.dur,
+      newSpeaker: element.newSpeaker
+   })
+  })
+  return words.filter(element => element.text.length !== 0) //removes empty text elements
+}
+
+//when new speaker, splits the text into two objects, so new speakers are on new lines
+const splitSpeakers = (data) => {
+  const addSpeaker = addNewSpeakerElement(data)
+  const cleanData = deleteSpecialChars(addSpeaker)
+
+  let noSplitArray = []
+  let splitArray = []
+
+  cleanData.forEach(element => {
+    element.newSpeaker === true &&
+    (element.text.indexOf("- ") > 0) |
+      (element.text.indexOf("all:") > 0) |
+      (element.text.indexOf("both:") > 0)
+      ? splitArray.push({ text: element.text.split('both:') })
+      : noSplitArray.push({
+          text: element.text,
+          start: element.start,
+          dur: element.dur,
+          newSpeaker: element.newSpeaker
+    })
+  })
+  console.log(splitArray)
+  
+}
+
+//returns formatted and clean array of text, start, and duration
+const getCaptions = (data) => {
+  const addSpeaker = addNewSpeakerElement(data)
+  const cleanData = deleteSpecialChars(addSpeaker)
+  console.log(cleanData)
+  return cleanData
+}
+
+//returns sound array with start times and duration
+const getSounds = (data) => {
+  const soundItems = data.filter(element => element.text.indexOf('[') > -1)
+  let soundArray = []
+
+  soundItems.forEach(element => {
+    soundArray.push({
+      sound: snipWord(element.text, "[", "]"),
       start: element.start,
       dur: element.dur
     })
   })
-
-  words = words.filter(element => element.text.length !== 0) //removes empty text elements
-  return words
+  return soundArray
 }
+
+getSounds(data)
+getCaptions(data)
+
+// export default { getCaptions, getSounds}
