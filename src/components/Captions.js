@@ -1,6 +1,6 @@
 import React, { Component } from "react"
-import getCaptions from "./cleanData"
-import getSounds from "./cleanData"
+import { getCaptions } from "./cleanData"
+
 
 class Captions extends Component {
   constructor(props) {
@@ -10,21 +10,17 @@ class Captions extends Component {
       soundEffect: ""
     }
   }
-
-  word = data => {
-    // this.setState({ word: (this.props.captions[0].text) })
-    // const rawData = data(this.props.captions)
-    // const data = prepTextForView(rawData)
-    // const rawData = this.props.captions
-
-    // rawData.forEach(element => {
-    //   console.log(element)
-    //   const text = element.text
-    //   this.setState({ word: text })
-    // })
+  
+  word = () => {
+    const captionsData = getCaptions(this.props.captions)
+    captionsData.forEach(element => {
+      console.log(element)
+    })
   }
-
-  componentDidMount() {}
+  
+  componentDidMount() {
+    this.word()
+  }
 
   render() {
     return (
