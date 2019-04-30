@@ -189,11 +189,17 @@ let data = [
     text: "because it's time to catch\nthis disco bastard."
   }
 ]
+
 //returns word between two characters
 const snipWord = (str, firstChar, secondChar) => {
   if (str.indexOf(firstChar) !== -1 && str.indexOf(secondChar) !== -1) {
     return str.slice(str.indexOf(firstChar), str.indexOf(secondChar) + 1)
   }
+}
+
+const convertToMs = seconds => {
+  const ms = seconds * 1000
+  return ms
 }
 
 // removes unwanted characters from text
@@ -216,8 +222,8 @@ const deleteSpecialChars = (data) => {
 
     words.push({
       text: word.trim(),
-      start: element.start,
-      dur: element.dur,
+      start: convertToMs(element.start),
+      dur: convertToMs(element.dur),
       newSpeaker: element.newSpeaker
     })
   })
@@ -238,21 +244,20 @@ const addNewSpeakerElement = data => {
   return data
 }
 
-
 const buildCaptionsArray = data => {
   let captions = []
-  data.forEach((words, index) => {
+  data.forEach((words) => {
     let duration = words.dur / words.text.length
-    words.text.split(' ').forEach(element => {
+    words.text.split(' ').forEach((element, index) => {
       captions.push({
         text: element,
-        start: words.start, //need to adjust start time per duration and word length
+        start: words.start + (index * duration),
         dur: duration,
-        newSpeaker: words.newSpeaker //need to set values to false created in the duplicate
+        newSpeaker: (index !== 0) ? (false) : words.newSpeaker
       })
     })
   })
-  console.log(captions)
+  return captions
 }
 
 //returns formatted and clean array of text, start, and duration
@@ -260,7 +265,7 @@ const getCaptions = (data) => {
   const addSpeaker = addNewSpeakerElement(data)
   const deleteChars = deleteSpecialChars(addSpeaker)
   const cleanData = buildCaptionsArray(deleteChars)
-  return cleanData
+  return cleanData 
 }
 
 getCaptions(data)

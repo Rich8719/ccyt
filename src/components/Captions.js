@@ -14,7 +14,13 @@ class Captions extends Component {
   word = () => {
     const captionsData = getCaptions(this.props.captions)
     captionsData.forEach(element => {
-      console.log(element)
+      // awaits video play
+      //cycles through each word based on time and duration
+      //sets state of word
+      // console.log(element)
+      this.setState({
+        word: element.text
+      })
     })
   }
   
