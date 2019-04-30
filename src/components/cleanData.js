@@ -1,4 +1,6 @@
 // Returns captions and soundEffect arrays, stripped of special characters, and adds newspeaker boolean to captions.
+
+//test data
 let data = [
   {
     start: "1.084",
@@ -202,8 +204,9 @@ const convertToMs = seconds => {
   return ms
 }
 
-// removes unwanted characters from text
-const removeCharacters = (element, findCharacter, replaceCharacters, replaceWith) => 
+// removes unwanted character from text
+// reformat so that it removes multiple characters ??
+const removeCharacter = (element, findCharacter, replaceCharacters, replaceWith) => 
   (element.indexOf(findCharacter) > -1)
     ? element.replace(replaceCharacters, replaceWith)
     : element
@@ -213,11 +216,11 @@ const deleteSpecialChars = (data) => {
   let words = []
 
   data.forEach(element => {
-    const removeSounds = removeCharacters(element.text, "[", /\[(.*?)\]\s/, "")
-    const removeBreaks = removeCharacters(removeSounds, "\n", "\n", " ")
-    const removeHyphens = removeCharacters(removeBreaks, "- ", "- ", "")
-    const removeAll = removeCharacters(removeHyphens, "all:", "all:", "") //All refers to notation in captions for all speakers
-    const removeDoubleHypens = removeCharacters(removeAll, '--', '--', "") //double hyphens come before "all." regex removes items that start and end --
+    const removeSounds = removeCharacter(element.text, "[", /\[(.*?)\]\s/, "")
+    const removeBreaks = removeCharacter(removeSounds, "\n", "\n", " ")
+    const removeHyphens = removeCharacter(removeBreaks, "- ", "- ", "")
+    const removeAll = removeCharacter(removeHyphens, "all:", "all:", "") //All refers to notation in captions for all speakers
+    const removeDoubleHypens = removeCharacter(removeAll, '--', '--', "") //double hyphens come before "all." regex removes items that start and end --
     const word = removeDoubleHypens
 
     words.push({
@@ -268,21 +271,25 @@ const getCaptions = (data) => {
   return cleanData 
 }
 
-getCaptions(data)
-
-//returns sound array with start times and duration
+//returns sound array with start times and duration and formats
 const getSounds = (data) => {
   const soundItems = data.filter(element => element.text.indexOf('[') > -1)
   let soundArray = []
 
   soundItems.forEach(element => {
+    let sound = snipWord(element.text, "[", "]")
     soundArray.push({
-      sound: snipWord(element.text, "[", "]"),
-      start: element.start,
-      dur: element.dur
+      sound: removeCharacter(
+        removeCharacter(sound, "[", "[", ""),
+        "]",
+        "]",
+        ""
+      ),
+      start: convertToMs(element.start),
+      dur: convertToMs(element.dur)
     })
   })
   return soundArray
 }
 
-// export { getCaptions, getSounds}
+export { getCaptions, getSounds}
