@@ -14,15 +14,23 @@ class Captions extends Component {
   word = () => {
     const captionsData = getCaptions(this.props.captions)
     captionsData.forEach(element => {
-      // awaits video play
-      //cycles through each word based on time and duration
-      //sets state of word
-      // console.log(element)
+      // if video not playing, await video play
+      // if last word stop
+      // get start time
+      // sets state of word
       this.setState({
         word: element.text
       })
+      // get duration await duration
+      // remove word
     })
   }
+  
+  // character selection function
+  
+  // pause function
+  
+  // connect to word styling component
   
   componentDidMount() {
     this.word()
