@@ -1,21 +1,41 @@
-import React from "react"
+import React, { Component } from "react"
 import ReactPlayer from "react-player"
 
-  const onPlay = (videoTime, captions) => {
+class Video extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      url: `https://www.youtube.com/watch?v=${props.id}`
+    }
+  }
+
+  onProgress = progress => {
+    this.setState({
+      progress
+    })
+  }
+
+  onPlay = (videoTime, captions) => {
     //finds array objects index number using videoTime in ms
-    //get start time
-    // word(i, startTime)
-    console.log('testPlay')
+    //get start time (videotime - current starttime)
+    // word(index, startTime)
   }
 
-  const onPause = () => {
+  onPause = () => {
     //sets the current word as the state (so it remains on screen)
-    console.log('testPlay')
   }
 
-const Video = props => {
-  const url = `https://www.youtube.com/watch?v=${props.id}`
-  return <ReactPlayer url={url} onPlay={onPlay} onPause={onPause}/>
-}
 
+  render() {
+    return (
+      <ReactPlayer
+        url={this.state.url}
+        onPlay={this.onPlay}
+        onPause={this.onPause}
+        onProgress={this.onProgress}
+        controls={true}
+      />
+    )
+  }
+}
 export default Video
