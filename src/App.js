@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import Video from "./components/Video"
 import getId from "./components/youtubeId"
 import Captions from "./components/Captions"
+import { getCaptions } from "./components/cleanData";
 import "./App.css"
 
 class App extends Component {
@@ -15,12 +16,6 @@ class App extends Component {
     }
   }
 
-  handleCaptions = captions => {
-    this.setState({
-      captions: captions
-    })
-  }
-
   handleChange = event => {
     this.setState({
       id: getId.youTubeGetId(event.target.value)
@@ -31,9 +26,12 @@ class App extends Component {
     event.preventDefault()
     fetch(`/api/id?id=${encodeURIComponent(this.state.id)}`)
       .then(response => response.json())
-      .then(captionsRaw => this.setState({ captionsRaw: captionsRaw }))
+      .then(captionsRaw => this.setState({ captionsRaw: captionsRaw })) //gets raw data from youtube
       .then(() => {
-        this.setState({ loadVideo: true })
+        this.setState({
+          loadVideo: true,
+          captions: getCaptions(this.state.captionsRaw) //formats raw data
+        })
       })
   }
 
@@ -43,10 +41,7 @@ class App extends Component {
         {this.state.loadVideo ? (
           <>
             <Video id={this.state.id} captions={this.state.captions}/>
-            <Captions
-              captionsRaw={this.state.captionsRaw}
-              onCaptions={this.handleCaptions}
-              captions={this.state.captions}
+            <Captions captions={this.state.captions}
             />
           </>
         ) : (

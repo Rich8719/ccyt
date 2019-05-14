@@ -1,6 +1,4 @@
 import React, { Component } from "react"
-import { getCaptions } from "./cleanData"
-
 
 class Captions extends Component {
   constructor(props) {
@@ -11,17 +9,8 @@ class Captions extends Component {
     }
   }
 
-  onPlay = (videoTime, captions) => {
-    //finds array objects index number using videoTime in ms
-    //get start time
-    // word(i, startTime)
-  }
-
-  onPause = () => {
-    //sets the current word as the state (so it remains on screen)
-  }
-
-  word = (startTime, captions) => {
+  word = (index, startTime) => {
+    const captions = this.props.captions
     //await start time
     //set state of word
     //await duration
@@ -29,9 +18,7 @@ class Captions extends Component {
   }
 
   componentDidMount() {
-    // this.setState({ captions: getCaptions(this.props.captionsRaw) })
-    this.props.onCaptions(getCaptions(this.props.captionsRaw))
-    // this.word()
+
   }
 
   render() {
