@@ -10,22 +10,28 @@ class Captions extends Component {
       soundEffect: ""
     }
   }
-  
-  word = () => {
-    const captionsData = getCaptions(this.props.captions)
-    captionsData.forEach(element => {
-      // awaits video play
-      //cycles through each word based on time and duration
-      //sets state of word
-      // console.log(element)
-      this.setState({
-        word: element.text
-      })
-    })
+
+  onPlay = (videoTime, captions) => {
+    //finds array objects index number using videoTime in ms
+    //get start time
+    // word(i, startTime)
   }
-  
+
+  onPause = () => {
+    //sets the current word as the state (so it remains on screen)
+  }
+
+  word = (startTime, captions) => {
+    //await start time
+    //set state of word
+    //await duration
+    //remove word
+  }
+
   componentDidMount() {
-    this.word()
+    // this.setState({ captions: getCaptions(this.props.captionsRaw) })
+    this.props.onCaptions(getCaptions(this.props.captionsRaw))
+    // this.word()
   }
 
   render() {

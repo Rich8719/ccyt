@@ -10,8 +10,15 @@ class App extends Component {
     this.state = {
       loadVideo: false,
       id: "",
+      captionsRaw: "",
       captions: ""
     }
+  }
+
+  handleCaptions = captions => {
+    this.setState({
+      captions: captions
+    })
   }
 
   handleChange = event => {
@@ -24,7 +31,7 @@ class App extends Component {
     event.preventDefault()
     fetch(`/api/id?id=${encodeURIComponent(this.state.id)}`)
       .then(response => response.json())
-      .then(captions => this.setState({ captions: captions }))
+      .then(captionsRaw => this.setState({ captionsRaw: captionsRaw }))
       .then(() => {
         this.setState({ loadVideo: true })
       })
@@ -35,8 +42,12 @@ class App extends Component {
       <div className="App">
         {this.state.loadVideo ? (
           <>
-            <Video id={this.state.id} />
-            <Captions captions={this.state.captions} />
+            <Video id={this.state.id} captions={this.state.captions}/>
+            <Captions
+              captionsRaw={this.state.captionsRaw}
+              onCaptions={this.handleCaptions}
+              captions={this.state.captions}
+            />
           </>
         ) : (
           <form onSubmit={this.handleSubmit}>
