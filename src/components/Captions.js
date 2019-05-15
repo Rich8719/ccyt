@@ -9,16 +9,20 @@ class Captions extends Component {
     }
   }
 
-  word = (index, startTime) => {
+  word = () => {
     const captions = this.props.captions
     //await start time
     //set state of word
     //await duration
     //remove word
+
+    captions.forEach(caption => {
+      this.setState({word: caption.text})
+    })
   }
 
   componentDidMount() {
-
+    this.word()
   }
 
   render() {

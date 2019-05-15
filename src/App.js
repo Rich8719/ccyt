@@ -1,7 +1,6 @@
 import React, { Component } from "react"
 import Video from "./components/Video"
 import getId from "./components/youtubeId"
-import Captions from "./components/Captions"
 import { getCaptions } from "./components/cleanData";
 import "./App.css"
 
@@ -41,8 +40,6 @@ class App extends Component {
         {this.state.loadVideo ? (
           <>
             <Video id={this.state.id} captions={this.state.captions}/>
-            <Captions captions={this.state.captions}
-            />
           </>
         ) : (
           <form onSubmit={this.handleSubmit}>
