@@ -61,7 +61,7 @@ const buildCaptionsArray = data => {
     words.text.split(' ').forEach((element, index) => {
       captions.push({
         text: element,
-        start: words.start + (index * duration),
+        start: Math.ceil(words.start + (index * duration)),
         dur: duration,
         newSpeaker: (index !== 0) ? (false) : words.newSpeaker
       })
