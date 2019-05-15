@@ -54,10 +54,15 @@ const addNewSpeakerElement = data => {
   return data
 }
 
+const wordCount = str => {
+  return str.split(" ").length
+}
+
 const buildCaptionsArray = data => {
   let captions = []
   data.forEach((words) => {
-    let duration = words.dur / words.text.length
+    let duration = words.dur / wordCount(words.text)
+    console.log(`word duration:${words.dur}/word text length: ${words.text.length}= duration: ${duration}. String:${words.text}`);
     words.text.split(' ').forEach((element, index) => {
       captions.push({
         text: element,
