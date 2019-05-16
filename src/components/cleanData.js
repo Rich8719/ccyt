@@ -67,7 +67,6 @@ const buildCaptionsArray = data => {
         text: element,
         start: Math.ceil(words.start + (index * duration)),
         dur: duration,
-        lineDuration: words.dur,
         newSpeaker: (index !== 0) ? (false) : words.newSpeaker
       })
     })

@@ -7,7 +7,8 @@ class Video extends Component {
     super(props)
     this.state = {
       url: `https://www.youtube.com/watch?v=${props.id}`,
-      progress: 0
+      progress: 0,
+      isPlaying: false
     }
   }
 
@@ -19,10 +20,11 @@ class Video extends Component {
   
   
   onPlay = () => {
-    // word(index, startTime)
+    this.setState({isPlaying:true})
   }
 
   onPause = () => {
+    this.setState({ isPlaying: false });
     //sets the current word as the state (so it remains on screen)
   }
 
@@ -37,7 +39,7 @@ class Video extends Component {
           onProgress={this.onProgress}
           controls={true}
         />
-        <Captions captions={this.props.captions} />
+        <Captions captions={this.props.captions} isPlaying={this.state.isPlaying} videoTime={this.state.progress}/>
       </>
     )
   }
