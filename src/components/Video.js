@@ -24,8 +24,7 @@ class Video extends Component {
   }
 
   onPause = () => {
-    this.setState({ isPlaying: false });
-    //sets the current word as the state (so it remains on screen)
+    this.setState({ isPlaying: false })
   }
 
 

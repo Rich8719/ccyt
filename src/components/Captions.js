@@ -4,13 +4,13 @@ class Captions extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      word: "",
+      word: '',
       currentWordIndex: 0,
-      soundEffect: ""
+      soundEffect: ''
     }
   }
 
-  wait = (time) => {
+  wait = time => {
     return new Promise(resolve => {
       setTimeout(resolve, time)
     })
@@ -25,16 +25,15 @@ class Captions extends Component {
   }
 
   loopWord = async () => {
-    const captions = this.props.captions.slice(this.state.currentWordIndex) //slice finds start 
+    const captions = this.props.captions
+    const currentWordTime = captions[this.state.currentWordIndex].start
+    const startTime = currentWordTime - this.props.videoTime * 1000
+    await this.wait(startTime)
 
     for (let i = this.state.currentWordIndex; i < captions.length; i++) {
       const caption = captions[i]
       if (this.props.isPlaying === false) {
         return
-      } else if (caption.newSpeaker === true) {
-        const startTime = caption.start - this.props.videoTime * 1000
-        await this.wait(startTime)
-        await this.setWord(i, caption.text, caption.dur)
       }
       else {
         await this.setWord(i, caption.text, caption.dur)
