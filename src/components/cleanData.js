@@ -23,12 +23,11 @@ const deleteSpecialChars = (data) => {
   let words = []
 
   data.forEach(element => {
-    const removeSounds = removeCharacter(element.text, "[", /\[(.*?)\]\s/, "")
+    const removeSounds = removeCharacter(element.text, "[", /\[.*?\]/g, "")
     const removeBreaks = removeCharacter(removeSounds, "\n", "\n", " ")
-    const removeHyphens = removeCharacter(removeBreaks, "- ", "- ", "")
+    const removeHyphens = removeCharacter(removeBreaks, "-", /[-]/g, "")
     const removeAll = removeCharacter(removeHyphens, "all:", "all:", "") //All refers to notation in captions for all speakers
-    const removeDoubleHypens = removeCharacter(removeAll, '--', '--', "") //double hyphens come before "all." regex removes items that start and end --
-    const word = removeDoubleHypens
+    const word = removeAll
 
     words.push({
       text: word.trim(),
@@ -37,7 +36,8 @@ const deleteSpecialChars = (data) => {
       newSpeaker: element.newSpeaker
     })
   })
-  return words.filter(element => element.text.length !== 0) //removes empty text elements
+
+  return words
 }
 
 // "- ", "both", or "all:" indicates a new speaker in json. This function adds newSpeaker boolean to words array.
@@ -65,13 +65,14 @@ const buildCaptionsArray = data => {
     words.text.split(' ').forEach((element, index) => {
       captions.push({
         text: element,
-        start: Math.ceil(words.start + (index * duration)),
+        start: Math.ceil(words.start + index * duration),
+        end: words.start + words.dur,
         dur: duration,
-        newSpeaker: (index !== 0) ? (false) : words.newSpeaker
+        newSpeaker: index !== 0 ? false : words.newSpeaker
       })
     })
   })
-  return captions
+  return captions.filter(element => element.text.length !== 0) //removes empty text elements
 }
 
 //returns formatted and clean array of text, start, and duration
@@ -79,6 +80,7 @@ const getCaptions = (data) => {
   const addSpeaker = addNewSpeakerElement(data)
   const deleteChars = deleteSpecialChars(addSpeaker)
   const cleanData = buildCaptionsArray(deleteChars)
+  
   return cleanData 
 }
 
@@ -86,7 +88,7 @@ const getCaptions = (data) => {
 const getSounds = (data) => {
   const soundItems = data.filter(element => element.text.indexOf('[') > -1)
   let soundArray = []
-
+  
   soundItems.forEach(element => {
     let sound = snipWord(element.text, "[", "]")
     soundArray.push({
@@ -95,12 +97,12 @@ const getSounds = (data) => {
         "]",
         "]",
         ""
-      ),
-      start: convertToMs(element.start),
-      dur: convertToMs(element.dur)
-    })
+        ),
+        start: convertToMs(element.start),
+        dur: convertToMs(element.dur)
+      })
   })
-  return soundArray
-}
-
+    return soundArray
+  }
+  
 export { getCaptions, getSounds}
