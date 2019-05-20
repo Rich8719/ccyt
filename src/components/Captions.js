@@ -16,44 +16,40 @@ class Captions extends Component {
     })
   }
 
-  setWord = async (index, word, time) => {
+  setWord = async (word, time) => {
     this.setState({
-      currentWordIndex: index,
       word: word
     })
     await this.wait(time)
   }
 
-  currentTimeIndex = () => {
-    //get video time
+  //Finds the closes word time in an array given the start time and returns index
+  closest = (captions) => {
     const videoTime = Math.floor(this.props.videoTime * 1000)
-    const captions = this.props.captions
 
-    for (let i = this.state.currentWordIndex; i < captions.length; i++) {
-      if (i === 0) {
-        return this.setState({currentWordIndex: 0})
-      } else {
-        const words = captions[i].text
-        const wordTime = captions[i].start
-        const curr = Math.abs(wordTime - videoTime)
-        const prev = Math.abs((captions[i - 1].start) - videoTime)
-        if (curr > prev) {
-          console.log(`
-            current word: ${words}
-            current index: ${i}
-          `)
-          return this.setState({ currentWordIndex: i })
-        }
-      } 
+    let startTime = captions[0].start //initial value
+    let diff = Math.abs(videoTime - startTime)
+    let index = 0
+
+    for (let i = 0; i < captions.length; i++) {
+      let newDiff = Math.abs(videoTime - captions[i].start)
+      
+      if (newDiff < diff) {
+        diff = newDiff
+        startTime = captions[i].start
+        index = i
+      }
     }
+    return this.setState({ currentWordIndex: index })
   }
 
   loopWord = async () => {
-    this.currentTimeIndex()
     const captions = this.props.captions
+    await this.closest(captions)
+    
     const currentWordTime = captions[this.state.currentWordIndex].start
     const startTime = currentWordTime - this.props.videoTime * 1000
-    await this.wait(startTime)
+    await this.wait(startTime) 
 
     for (let i = this.state.currentWordIndex; i < captions.length; i++) {
       const caption = captions[i]
@@ -67,7 +63,7 @@ class Captions extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.isPlaying !== prevProps.isPlaying) {
+    if (this.props.isPlaying !== prevProps.isPlaying && this.props.isPlaying === true) {
       this.loopWord()
     }
   }
