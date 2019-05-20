@@ -23,7 +23,7 @@ class Captions extends Component {
     await this.wait(time)
   }
 
-  //Finds the closes word time in an array given the start time and returns index
+  //Finds the closest word time in an array given the start time and returns index
   closest = (captions) => {
     const videoTime = Math.floor(this.props.videoTime * 1000)
 
@@ -57,7 +57,7 @@ class Captions extends Component {
         return
       }
       else {
-        await this.setWord(i, caption.text, caption.dur)
+        await this.setWord(caption.text, caption.dur)
       }
     }
   }
