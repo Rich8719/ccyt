@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import SpeechBubble from "./SpeechBubble"
 
 class Captions extends Component {
   constructor(props) {
@@ -70,10 +71,7 @@ class Captions extends Component {
 
   render() {
     return (
-      <div>
-        <div className="captions">{this.state.word}</div>
-        <div className="sound-effects">{this.state.soundEffect}</div>
-      </div>
+      <SpeechBubble word={this.state.word} soundEffect={this.state.soundEffect}/>
     )
   }
 }
