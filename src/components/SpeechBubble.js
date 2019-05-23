@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+// import tr from "../images/top-right-sb.svg";
+import getStyle from "./getSpeechBubble";
 
 class SpeechBubble extends Component {
   constructor(props) {
@@ -6,7 +8,10 @@ class SpeechBubble extends Component {
     this.state = {
       posX: Number,
       posY: Number,
-      bubbleStyle: "url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/4273/speech-bubble.svg')"
+      bubbleStyle: {}
+      // {
+      //   backgroundImage: `url('${tr}')`
+      // }
     }
   }
 
@@ -14,19 +19,23 @@ class SpeechBubble extends Component {
     // gets the correct speech bubble based on face position (posX and posY)
     // setsState of bubble style
     // or just creates a component with svg in it
+    let position = 'tr'
+    this.setState({
+      bubbleStyle: getStyle(position)
+    })
   }
   
   render() {
-    let bubbleStyle = {
-      backgroundImage: this.state.bubbleStyle
-    }
+    let bubbleStyle = this.state.bubbleStyle
     return (
       <div className="speech-wrapper">
+        {/* <img alt="bottom left speech bubble" src={bl}></img> */}
         <div className="bubble" style={bubbleStyle}>
           <div className="speech">{this.props.word}
           </div>
         </div>
         <div className="sound-effects">{this.props.soundEffect}</div>
+        <button onClick={this.getSpeechBubble}></button>
       </div>
     )
   }

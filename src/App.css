@@ -1,6 +1,7 @@
 body {
   background-color: #333;
   color: #fff;
+  text-align: center;
 }
 
 @font-face {
@@ -10,6 +11,18 @@ body {
   font-style: normal;
   font-weight: 400;
 }
+
+/* ============Enter URL Page ================= */
+label{
+  display: block;
+  margin: 0, auto;
+  margin-bottom: 1em;
+}
+
+#url {
+  margin-right: 1em;
+}
+/* ============End Enter URL Page ================= */
 
 /* =======Speech Bubbles========== */
 /* width needs to be the same as the youtube video */
@@ -27,6 +40,7 @@ body {
   margin: 70px -330px 0 0; /* use to move  x and y not bottom values*/
   position: relative;
   min-width: 130px;
+  background-repeat: no-repeat !important;
 }
 
 .speech{
