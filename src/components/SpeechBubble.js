@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 // import tr from "../images/top-right-sb.svg";
-import getStyle from "./getSpeechBubble";
+import getStyle from "./SpeechStyles";
 
 class SpeechBubble extends Component {
   constructor(props) {

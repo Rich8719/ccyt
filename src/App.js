@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import Video from "./components/Video"
-import getId from "./components/youtubeId"
-import { getCaptions } from "./components/cleanData";
+import getId from "./components/YouTubeId"
+import { getCaptions } from "./components/CleanData";
 import "./App.css"
 
 class App extends Component {
