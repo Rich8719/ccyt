@@ -42,6 +42,12 @@ Also, creates new components based upon the number of speakers and when to creat
 ## SpeechStyles
 Sets the background svg image and the width of the speech bubble (dependent on the longest word in the text)
 
+## FaceTracker
+Uses FaceAPI.js https://github.com/justadudewhohacks/face-api.js?files=1 and returns the X and Y coordinates of the face.
+
+## FacialRecognition
+Returns the identity of the person on screen.
+
 ## Server
 Server is based on https://www.twilio.com/blog/react-app-with-node-js-server-proxy
 
