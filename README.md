@@ -34,6 +34,14 @@ Takes the raw YouTube subtitles, and formats it to be read by the app. Returns t
 ### Captions.js
 Child of Video. Accepts the cleaned Captions Data. Loops through words in data on play. Sets timing of words. Renders words on screen.
 
+## SpeechBubble
+Speech bubbles are rendered on an imaginary grid that divides the screen in half horizontally and by thirds vertically. The SpeechBubble component takes in the x and y coordinates from the FaceTracker, and sets the speech bubble and text position in the grid element closest to the face without a face in it. The position is set via adding css classes.
+
+Also, creates new components based upon the number of speakers and when to create new speech bubbles based upon the New Speaker state in App captions state.
+
+## SpeechStyles
+Sets the background svg image and the width of the speech bubble (dependent on the longest word in the text)
+
 ## Server
 Server is based on https://www.twilio.com/blog/react-app-with-node-js-server-proxy
 
