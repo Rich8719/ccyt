@@ -37,7 +37,6 @@ label{
 .bubble{
   background-position: center;
   display: inline-block;
-  margin: 70px -330px 0 0; /* use to move  x and y not bottom values*/
   position: relative;
   min-width: 130px;
   background-repeat: no-repeat !important;
@@ -46,6 +45,50 @@ label{
 .speech{
   font-family: SequentialistBB, cursive; 
   font-size: 2em;
+}
+
+.top-right{
+  margin: 10px -340px 0 0;
+}
+
+.top-right-speech, .top-left-speech{
   padding: .5em 1em 2em 1em;
 }
+
+.top-left{
+  margin: 10px 340px 0 0;
+}
+
+.middle-right{
+  margin: 130px -340px 0 0;
+  min-width:180px;
+}
+
+.middle-right-speech {
+  padding: .6em 1em .8em 0;
+  margin-left: 2.5em;
+}
+
+.middle-left{
+  margin: 130px 340px 0 0;
+  min-width:180px;
+}
+
+.middle-left-speech{
+  padding: .6em 0em .8em 1em;
+  margin-right: 2.5em;
+}
+
+.bottom-right{
+  margin: 220px -340px 0 0;
+}
+
+.bottom-right-speech, .bottom-left-speech{
+  padding: 1.8em 1em .8em 1em;
+}
+
+.bottom-left{
+  margin: 220px 340px 0 0;
+}
+
 /* =======End Speech Bubbles========== */

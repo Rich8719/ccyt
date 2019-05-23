@@ -1,4 +1,8 @@
-// sets the styling for the speech bubbles and text
+// Sets dynamically computed styles. SVG and word length.
+// word length is longest word from new Speaker to new speaker
+// SVG set here to import them first. Not sure if this is best practice
+// Other styles for different positions are set in app.styles
+
 import tr from "../images/top-right-sb.svg";
 import tl from "../images/top-left-sb.svg";
 import mr from "../images/middle-right-sb.svg";
@@ -20,26 +24,38 @@ const getStyle = (position) => {
 }
 
 const topRight = {
+  bubbleClass: 'top-right',
+  speechClass: 'top-right-speech',
   backgroundImage: `url('${tr}')`
 }
 
 const topLeft = {
+  bubbleClass: 'top-left',
+  speechClass: 'top-left-speech',
   backgroundImage: `url('${tl}')`
 }
 
 const middleRight = {
+  bubbleClass: 'middle-right',
+  speechClass: 'middle-right-speech',
   backgroundImage: `url('${mr}')`
 }
 
 const middleLeft = {
+  bubbleClass: 'middle-left',
+  speechClass: 'middle-left-speech',
   backgroundImage: `url('${ml}')`
 }
 
 const bottomRight = {
+  bubbleClass: 'bottom-right',
+  speechClass: 'bottom-right-speech',
   backgroundImage: `url('${br}')`
 }
 
 const bottomLeft = {
+  bubbleClass: 'bottom-left',
+  speechClass: 'bottom-left-speech',
   backgroundImage: `url('${bl}')`
 }
 

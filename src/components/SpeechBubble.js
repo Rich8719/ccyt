@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-// import tr from "../images/top-right-sb.svg";
 import getStyle from "./SpeechStyles";
 
 class SpeechBubble extends Component {
@@ -9,33 +8,34 @@ class SpeechBubble extends Component {
       posX: Number,
       posY: Number,
       bubbleStyle: {}
-      // {
-      //   backgroundImage: `url('${tr}')`
-      // }
     }
   }
 
   getSpeechBubble = () => {
-    // gets the correct speech bubble based on face position (posX and posY)
-    // setsState of bubble style
-    // or just creates a component with svg in it
-    let position = 'tr'
+    let position = 'ml'
     this.setState({
       bubbleStyle: getStyle(position)
     })
   }
   
   render() {
-    let bubbleStyle = this.state.bubbleStyle
+    let bubbleClassName = 'bubble '
+    bubbleClassName += this.state.bubbleStyle.bubbleClass
+    let speechClassName = 'speech '
+    speechClassName += this.state.bubbleStyle.speechClass
     return (
       <div className="speech-wrapper">
-        {/* <img alt="bottom left speech bubble" src={bl}></img> */}
-        <div className="bubble" style={bubbleStyle}>
-          <div className="speech">{this.props.word}
+        <div
+          className={bubbleClassName}
+          style={this.state.bubbleStyle}>
+          <div className={speechClassName}>
+            {this.props.word}
           </div>
         </div>
-        <div className="sound-effects">{this.props.soundEffect}</div>
-        <button onClick={this.getSpeechBubble}></button>
+        <div className="sound-effects">
+          {this.props.soundEffect}
+        </div> */}
+        <button onClick={this.getSpeechBubble}>TEST BUBBLES</button>
       </div>
     )
   }
