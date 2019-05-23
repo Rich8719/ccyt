@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import Video from "./components/Video"
 import getId from "./components/YouTubeId"
 import { getCaptions } from "./components/CleanData";
+import faceTest from "./components/FaceTrack.js"
 import "./App.css"
 
 class App extends Component {
@@ -32,6 +33,10 @@ class App extends Component {
           captions: getCaptions(this.state.captionsRaw) //formats raw data
         })
       })
+  }
+
+  componentDidMount() {
+    faceTest()
   }
 
   render() {
