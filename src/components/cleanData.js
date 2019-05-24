@@ -80,7 +80,7 @@ const getCaptions = (data) => {
   const addSpeaker = addNewSpeakerElement(data)
   const deleteChars = deleteSpecialChars(addSpeaker)
   const cleanData = buildCaptionsArray(deleteChars)
-  
+  console.log(cleanData)
   return cleanData 
 }
 
