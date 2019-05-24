@@ -8,6 +8,7 @@
     "react-dom": "^16.8.4",
     "react-player": "^1.9.3",
     "react-scripts": "2.1.8",
+    "syllable": "^3.6.1",
     "youtube-captions-scraper": "^1.0.3"
   },
   "scripts": {
