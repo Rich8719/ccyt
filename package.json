@@ -5,6 +5,7 @@
   "dependencies": {
     "dotenv": "^8.0.0",
     "face-api.js": "^0.20.0",
+    "pluralize": "^8.0.0",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-player": "^1.9.3",

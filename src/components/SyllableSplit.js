@@ -1,3 +1,8 @@
+require('dotenv').config()
+
+const pluralize = require('pluralize')
+const syllable = require('syllable')
+
 const data = [
   {
     text: "Captain,"
@@ -867,33 +872,62 @@ const data = [
     text: "bastard."
   }
 ]
-const minSplitLength = 8 // words this long or longer are split
 
-require('dotenv').config()
-
-
-//finds words above minSplitLength
-const wordLength = (data) => {
-  // data.forEach(element => {
-  //   let word = element.text
-  //   if (word.length > minSplitLength) {
-  //     console.log(word)
-  //     return word
-  //   }
-  // })
-  let word = 'interrupt'
-  return word
-}
-
-const word = wordLength(data)
-
-const url = `https://wordsapiv1.p.mashape.com/words/${word}`
+const minSplitLength = 8 // words this long or longer are spli
 const unirest = require('unirest')
 const apiKey = process.env.REACT_APP_WORDS_API_KEY
-const api = unirest.get(url).header("X-Mashape-Key", apiKey) 
 
-// api
-//   .header("Accept", "application/json")
-//   .end(function (result) {
-//     console.log(result.status, result.headers, result.body);
-//   })
+const syllables = async (word) => {
+  const url = `https://wordsapiv1.p.mashape.com/words/${word}/syllables`
+  const api = unirest.get(url).header("X-Mashape-Key", apiKey)
+  let res = []
+  await api
+    .header("Accept", "application/json")
+    .end(function (result) {
+      result.status === 200 ? // or if syllables array empty
+        console.log(result.status, result.body) // replace old word in array
+        : divideWordBySyllable(word)
+  })
+}
+
+//get syllables from api
+const getData = async (data) => {
+  for (let i = 0; i < data.length; i++) {
+    let word = cleanData(data[i].text)
+    console.log(word)
+    // await syllables(word)
+  }
+}
+
+const divideWordBySyllable = (word) => {
+  return word
+  // if word longer than 8 letters but only one syllable
+  // or if 'word not found'
+  // or if syllables is empty object
+}
+
+//finds words above minSplitLength
+const filterData = (data) => {
+  const numOfSyllables = syllable(data.text)
+  const words = data.filter(data => data.text.length > minSplitLength && numOfSyllables >= 2)
+  return words
+}
+
+const cleanData = (word) => {
+  // data for wordsapi must be lowercase, without punctuation
+  const removePunctuation = word.replace(/[.,/#!?$%^&*;:{}=\-_`~()]/g, "");
+  const removeSpaces = removePunctuation.replace(" ", "")
+  const clean = removeSpaces.toLowerCase()
+  
+  //plurals break it capability vs capabilities, correction vs corrections
+  //words that are plural often rturn as singular
+  const plural = pluralize.isPlural(clean)
+  return plural === true ?
+    pluralize.singular(clean) //need to convert back to singular after search
+    : clean
+
+  //gerrunds also have issues underestimating vs understimate
+  // return clean
+}
+
+getData(filterData(data))
