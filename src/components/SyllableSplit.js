@@ -869,6 +869,9 @@ const data = [
 ]
 const minSplitLength = 8 // words this long or longer are split
 
+require('dotenv').config()
+
+
 //finds words above minSplitLength
 const wordLength = (data) => {
   // data.forEach(element => {
@@ -884,14 +887,13 @@ const wordLength = (data) => {
 
 const word = wordLength(data)
 
-// let word = 'interrupt'
 const url = `https://wordsapiv1.p.mashape.com/words/${word}`
 const unirest = require('unirest')
-
+const apiKey = process.env.REACT_APP_WORDS_API_KEY
 const api = unirest.get(url).header("X-Mashape-Key", apiKey) 
 
-api
-  .header("Accept", "application/json")
-  .end(function (result) {
-    console.log(result.status, result.headers, result.body);
-  })
+// api
+//   .header("Accept", "application/json")
+//   .end(function (result) {
+//     console.log(result.status, result.headers, result.body);
+//   })
