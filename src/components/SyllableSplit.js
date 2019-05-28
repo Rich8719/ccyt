@@ -1,4 +1,3 @@
-const syllable = require('syllable')
 const data = [
   {
     text: "Captain,"
@@ -869,83 +868,30 @@ const data = [
   }
 ]
 const minSplitLength = 8 // words this long or longer are split
-let syllables = []
 
-const countSyllables = (data) => {
-  let numOfSyllables
-  data.forEach(element => {
-    let word = element.text
-    if (word.length > minSplitLength) {
-      numOfSyllables = syllable(word) 
-      split(word, numOfSyllables)
-    }
+//finds words above minSplitLength
+const wordLength = (data) => {
+  // data.forEach(element => {
+  //   let word = element.text
+  //   if (word.length > minSplitLength) {
+  //     console.log(word)
+  //     return word
+  //   }
+  // })
+  let word = 'interrupt'
+  return word
+}
+
+const word = wordLength(data)
+
+// let word = 'interrupt'
+const url = `https://wordsapiv1.p.mashape.com/words/${word}`
+const unirest = require('unirest')
+
+const api = unirest.get(url).header("X-Mashape-Key", apiKey) 
+
+api
+  .header("Accept", "application/json")
+  .end(function (result) {
+    console.log(result.status, result.headers, result.body);
   })
-}
-
-//converts word to code showing vowels and consonants (eg code = cvcv)
-const convertToVc = (word) => {
-  const consonants = word.replace(/[bcdfghjklmnpqrstvwxyz]/gi, 'c')
-  const vowels = consonants.replace(/[aeioou]/gi, 'v')
-  const removePunctuation = vowels.replace(/[.,\/#!$%\^&\*;:{}\?=\-_`~()]/g, "")
-  const vcCode = removePunctuation
-  
-  return vcCode
-}
-
-// When there is only one syllable, you usually divide in front of it, as in: "o-pen", "i-tem", "e-vil", and "re-port"
-const ruleSingleMidCons = (word, vcCode) => {
-  return syllables.push(
-    word, {
-      syb1: word.slice(0, vcCode.indexOf("vcv") + 1), // slice from begining up to v
-      syb2: word.slice(vcCode.indexOf("vcv") + 1) //slice from 'c' to end
-    }
-  )
-}
-
-const ruleCompoundWord = (word) => {
-  // 8. Divide off any compound words, prefixes, suffixes and roots which have vowel sounds.
-  // Split off the parts of compound words like "sports-car" and "house-boat".
-}
-
-const rulePrefixes = (word) => {
-  // Divide off prefixes such at "un-happy", "pre-paid", or "re-write". Also divide off suffixes as in the words "farm-er", "teach-er", "hope-less" and "care-ful". In the word "stop-ping", the suffix is actually "-ping" because this word follows the rule that when you add "-ing" to a word with one syllable, you double the last consonant and add the "-ing".
-}
-
-const ruleEndLe = (word) => {
-  // 7. Divide before the consonant before an "-le" syllable.
-  // When you have a word that has the old-style spelling in which the "-le" sounds like "-el", divide before the consonant before the "-le". For example: "a/ble", "fum/ble", "rub/ble" "mum/ble" and "this/tle". The only exception to this are "ckle" words like "tick/le". 
-}
-
-const rules = (word, vcCode, numOfSyllables) => {
-  if (numOfSyllables === 2 && vcCode.includes('vcv')) {
-    ruleSingleMidCons(word, vcCode)
-  }
-  else {
-    console.log('next rule')
-    return
-  }
-  console.log(syllables)
-// Syllable may consist of the following:
-// A vowel alone : a-round, e-ther, e-ver, i-con
-// A vowel with one consonant: on, to, do
-// A vowel with more than one consonant: list, germ, balm
-// A semi-vowel with a combination of vowels and consonants: yield, wet
-// A combination of consonants with a dipthong: foul, toil, mean
-// A consonant with a combination of vowels: too, pie
-// A combination of vowels and consonants: thought, love,
-
-// In words ending in double consonants, the consonant should not be separated in syllabifying their derivatives – fall, fall-en; miss, miss-ing; pass, pass-ive.
-
-// Divide between two middle consonants.
-// Split up words that have two middle consonants. For example:
-// hap/pen, bas/ket, let/ter, sup/per, din/ner, and Den/nis. The only exceptions are the consonant digraphs. Never split up consonant digraphs as they really represent only one sound. The exceptions are "th", "sh", "ph", "th", "ch", and "wh".  
-
-
-// console.log(vcCode, numOfSyllables)
-}
-
-const split = (word, numOfSyllables) => {
-  rules(word, convertToVc(word), numOfSyllables)
-}
-
-countSyllables(data)
