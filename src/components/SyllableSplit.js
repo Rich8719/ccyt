@@ -877,33 +877,33 @@ const minSplitLength = 8 // words this long or longer are spli
 const unirest = require('unirest')
 const apiKey = process.env.REACT_APP_WORDS_API_KEY
 
-const syllables = async (word) => {
-  const url = `https://wordsapiv1.p.mashape.com/words/${word}/syllables`
-  const api = unirest.get(url).header("X-Mashape-Key", apiKey)
-  let res = []
-  await api
-    .header("Accept", "application/json")
-    .end(function (result) {
-      result.status === 200 ? // or if syllables array empty
-        console.log(result.status, result.body) // replace old word in array
-        : divideWordBySyllable(word)
-  })
-}
-
 //get syllables from api
+const getSyllables = async (word) => {
+  const url = `https://wordsapiv1.p.mashape.com/words/${word}/syllables/`
+  return await unirest.get(url).header("X-Mashape-Key", apiKey)
+    .header("Accept", "application/json")
+    .then(result => { return result.body })
+  }
+  // return result.status === 200 ? // && syllables array not empty
+  //   res = result.body // replace old word in array
+  //   : divideWordBySyllable(word)
+
 const getData = async (data) => {
   for (let i = 0; i < data.length; i++) {
-    let word = cleanData(data[i].text)
-    console.log(word)
-    // await syllables(word)
+    const originalWord = cleanData(data[i].text)
+    const isPlural = pluralize.isPlural(originalWord)
+    let word
+   
+    if (isPlural === true) {
+      word = pluralize.singular(originalWord)
+      const syllables = getSyllables(word)
+      syllables.then(result => pluralCorrect(result, originalWord))      
+    } else {
+      word = originalWord
+      const syllables = getSyllables(word)
+      syllables.then(result => console.log(result)) //replace result in array
+    }
   }
-}
-
-const divideWordBySyllable = (word) => {
-  return word
-  // if word longer than 8 letters but only one syllable
-  // or if 'word not found'
-  // or if syllables is empty object
 }
 
 //finds words above minSplitLength
@@ -919,15 +919,68 @@ const cleanData = (word) => {
   const removeSpaces = removePunctuation.replace(" ", "")
   const clean = removeSpaces.toLowerCase()
   
+  return(clean)
   //plurals break it capability vs capabilities, correction vs corrections
   //words that are plural often rturn as singular
-  const plural = pluralize.isPlural(clean)
-  return plural === true ?
-    pluralize.singular(clean) //need to convert back to singular after search
-    : clean
-
+  
   //gerrunds also have issues underestimating vs understimate
-  // return clean
 }
+
+const pluralData =
+{ word: 'capability',
+    syllables: {
+      count: 5,
+      list: [
+        'ca',
+        'pa',
+        'bil',
+        'i',
+        'ty'
+      ]
+    }
+  }
+
+const pluralizeSyllable = (lastSyllable) => {
+  let lastLetter = lastSyllable.charAt(lastSyllable.length - 1)
+  let pluralSyllable
+
+  if (lastLetter === 'y') {
+    pluralSyllable = lastSyllable.replace('y', 'ies')
+    return pluralSyllable
+  } else if (lastLetter !== 'y') {
+    pluralSyllable = lastSyllable + 's'
+    return pluralSyllable
+  }
+}
+
+
+const pluralCorrect = (syllables, originalWord) => {
+  const list = syllables.syllables.list
+  const lastSyllable = list[list.length - 1]
+  let pluralWord = ''
+
+  for (let i = 0; i < list.length; i++) {
+    i === list.length - 1 ?
+      pluralWord += pluralizeSyllable(lastSyllable)
+      : pluralWord += list[i]
+  }
+  
+  return pluralWord === originalWord ?
+    pluralWord
+    : divideWordBySyllable(originalWord)
+}
+
+
+const divideWordBySyllable = (word) => {
+  const numOfSyllables = syllable(word)
+  
+  console.log(numOfSyllables, word.length)
+  return word
+  // if word longer than 8 letters but only one syllable
+  // or if 'word not found'
+  // or if syllables is empty object
+}
+
+// pluralCorrect(pluralData, 'corrections')
 
 getData(filterData(data))
