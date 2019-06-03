@@ -881,9 +881,9 @@ const cleanCaptions = (data) => {
   data.forEach(element => {
     const word = element.text
     const numOfSyllables = syllable(word)
-    const wordLength = word.length
-    return wordLength >= minSplitLength && numOfSyllables >= 2 ? splitSyllable(word)
-      : wordLength >= minSplitLength && numOfSyllables < 2 ? divideByLength(word)
+    const wordLength = word.replace(/[^a-zA-Z]/g, '').length
+    return wordLength >= minSplitLength && numOfSyllables < 2 ? divideByLength(word)
+      : wordLength >= minSplitLength && numOfSyllables >= 2 ? splitSyllable(word, numOfSyllables)
       : null
   })
 }
@@ -893,8 +893,10 @@ const getSyllables = async (word) => {
   const url = `https://wordsapiv1.p.mashape.com/words/${word}/syllables/`
   return await unirest.get(url).header("X-Mashape-Key", apiKey)
     .header("Accept", "application/json")
-    .then(result => { return result.body })
-  }
+    .then(result => 
+    { return result.body }
+  )
+}
 
 const cleanData = (word) => {
   const removePunctuation = word.replace(/[.,/#!?$%^&*;:{}=\-_`~()]/g, "");
@@ -903,19 +905,6 @@ const cleanData = (word) => {
   return(clean)
 
   //gerrunds also have issues underestimating vs understimate
-}
-
-const pluralData =
-{
-  word: 'correction',
-  syllables: {
-    count: 3, 
-    list: [
-      'cor',
-      'rec',
-      'tion'
-    ]
-  }
 }
 
 const pluralizeSyllable = (lastSyllable) => {
@@ -931,8 +920,7 @@ const pluralizeSyllable = (lastSyllable) => {
   }
 }
 
-
-const pluralCorrect = (syllables, originalWord) => {
+const pluralCorrect = (syllables, originalWord, numOfSyllables) => {
   const list = syllables.syllables.list
   const lastSyllable = list[list.length - 1]
   let pluralWord = ''
@@ -941,26 +929,23 @@ const pluralCorrect = (syllables, originalWord) => {
   for (let i = 0; i < list.length; i++) {
     if (i === list.length - 1) {
       pluralWord += pluralizeSyllable(lastSyllable)
-      newSyllables.push([
+      newSyllables.push(
         pluralizeSyllable(lastSyllable)
-      ]) 
+      ) 
     } else {
       pluralWord += list[i]
-      newSyllables.push([
+      newSyllables.push(
         list[i]
-      ]) 
+      ) 
     }
   }
-
-  return pluralWord === originalWord ?
-    newSyllables
-    : divideBySyllable(originalWord)
+  return pluralWord === cleanData(originalWord) ?
+    console.log(newSyllables)
+    : divideBySyllable(originalWord, numOfSyllables)
 }
 
-
 //catch all function. Divides words by number of syllables, if syllables can't be found
-const divideBySyllable = (word) => {
-  const numOfSyllables = syllable(word)
+const divideBySyllable = (word, numOfSyllables) => {
   let i = 0
   let sliceFrom = 0
   let sliceTo = 0
@@ -978,16 +963,25 @@ const divideBySyllable = (word) => {
     }
     i++
   }
+  console.log(syllables);
+  
   return syllables
 }
 
+//creates faux number of syllables for words longer than 8 characters that have only one syllable so that they can be divided by divideBySyllables
 const divideByLength = (word) => {
-  //function for one syllable words longer than 8 letters. Splits them into parts
+  const half = Math.ceil(word.length / 2)
+  const maxLength = half >= 5 ? 5 : half
+  const numOfSyllables = word.length / maxLength
+
+  divideBySyllable(word, numOfSyllables)
 }
 
-pluralCorrect(pluralData, 'exactly')
+const isNotEmpty = (obj, word) => Object.entries(obj).length === 0 && obj.constructor === Object ?
+  divideByLength(word)
+  : obj
 
-const splitSyllable = async (originalWord) => {
+const splitSyllable = async (originalWord, numOfSyllables) => {
   let word = cleanData(originalWord) // data for wordsapi must be lowercase, without punctuation
   const isPlural = pluralize.isPlural(word)
 
@@ -995,19 +989,18 @@ const splitSyllable = async (originalWord) => {
     const singularWord = pluralize.singular(word) // data for wordsapi must not be plural
     const syllables = getSyllables(singularWord)
     syllables   
-      // .then(result => { return console.log(result, originalWord) })
-      .then(result => { return pluralCorrect(result, originalWord) })
+      // .then(result => { return console.log(result.syllables.list, originalWord) })
+      .then(result => {
+        return isNotEmpty(result) && isNotEmpty(result.syllables) && isNotEmpty(result.syllables.list) ?
+          pluralCorrect(result, originalWord, numOfSyllables)
+          : divideByLength(originalWord)
+      })
       // .then(plural => { return console.log(plural) }) //replace result in array
-  } else {
-    // const syllables = getSyllables(word)
-    // syllables
-    //   .then(result => { return console.log(result, word) } ) //replace result in array
-  }
+    } else {
+      // const syllables = getSyllables(word)
+      // syllables
+      //   .then(result => { return console.log(result, word) } ) //replace result in array
+    }
 }
 
-//For divide by syl:or if 'word not found':or if syllables is empty object
-  // return result.status === 200 ? // && syllables array not empty
-  //   res = result.body // replace old word in array
-  //   : divideWordBySyllable(word)
-
-// cleanCaptions(data)
+cleanCaptions(data)
