@@ -888,23 +888,11 @@ const cleanCaptions = (data) => {
   })
 }
 
-//get syllables from api
-const getSyllables = async (word) => {
-  const url = `https://wordsapiv1.p.mashape.com/words/${word}/syllables/`
-  return await unirest.get(url).header("X-Mashape-Key", apiKey)
-    .header("Accept", "application/json")
-    .then(result => 
-    { return result.body }
-  )
-}
-
 const cleanData = (word) => {
   const removePunctuation = word.replace(/[.,/#!?$%^&*;:{}=\-_`~()]/g, "");
   const removeSpaces = removePunctuation.replace(" ", "")
   const clean = removeSpaces.toLowerCase()  
   return(clean)
-
-  //gerrunds also have issues underestimating vs understimate
 }
 
 const pluralizeSyllable = (lastSyllable) => {
@@ -920,6 +908,7 @@ const pluralizeSyllable = (lastSyllable) => {
   }
 }
 
+// returns array of pluralized syllables if the new syllable word (array) is the same as the original word
 const pluralCorrect = (syllables, originalWord, numOfSyllables) => {
   const list = syllables.syllables.list
   const lastSyllable = list[list.length - 1]
@@ -940,8 +929,9 @@ const pluralCorrect = (syllables, originalWord, numOfSyllables) => {
     }
   }
   return pluralWord === cleanData(originalWord) ?
-    console.log(newSyllables)
+    newSyllables
     : divideBySyllable(originalWord, numOfSyllables)
+    // : console.log(originalWord, numOfSyllables)
 }
 
 //catch all function. Divides words by number of syllables, if syllables can't be found
@@ -963,7 +953,7 @@ const divideBySyllable = (word, numOfSyllables) => {
     }
     i++
   }
-  console.log(syllables);
+  // console.log(syllables)
   
   return syllables
 }
@@ -973,34 +963,44 @@ const divideByLength = (word) => {
   const half = Math.ceil(word.length / 2)
   const maxLength = half >= 5 ? 5 : half
   const numOfSyllables = word.length / maxLength
-
+  // console.log('divide by length', word)
   divideBySyllable(word, numOfSyllables)
 }
 
-const isNotEmpty = (obj, word) => Object.entries(obj).length === 0 && obj.constructor === Object ?
-  divideByLength(word)
-  : obj
+const isEmpty = (obj) => Object.entries(obj).length === 0 && obj.constructor === Object
+
+//get syllables from api
+const getSyllables = async (word) => {
+  const url = `https://wordsapiv1.p.mashape.com/words/${word}`
+  return await unirest.get(url).header("X-Mashape-Key", apiKey)
+    .header("Accept", "application/json")
+    .then(result => {
+      return result}
+  )
+}
 
 const splitSyllable = async (originalWord, numOfSyllables) => {
   let word = cleanData(originalWord) // data for wordsapi must be lowercase, without punctuation
   const isPlural = pluralize.isPlural(word)
+  let finalSyllables = []
 
   if (isPlural === true) {
     const singularWord = pluralize.singular(word) // data for wordsapi must not be plural
     const syllables = getSyllables(singularWord)
-    syllables   
-      // .then(result => { return console.log(result.syllables.list, originalWord) })
-      .then(result => {
-        return isNotEmpty(result) && isNotEmpty(result.syllables) && isNotEmpty(result.syllables.list) ?
-          pluralCorrect(result, originalWord, numOfSyllables)
-          : divideByLength(originalWord)
-      })
-      // .then(plural => { return console.log(plural) }) //replace result in array
-    } else {
-      // const syllables = getSyllables(word)
-      // syllables
-      //   .then(result => { return console.log(result, word) } ) //replace result in array
+    // syllables   
+    //   .then(result => {
+    //     return isEmpty(result) && isEmpty(result.syllables) && isEmpty(result.syllables.list) ?
+    //       pluralCorrect(result, originalWord, numOfSyllables)
+    //       : divideByLength(originalWord)
+    //   })
+  } else {
+      const syllables = getSyllables(word)
+      syllables
+        .then(result => {
+          return result.status === 200 && typeof result.body.syllables !== 'undefined' && isEmpty(result.body.syllables) === false ?
+            console.log(result.body.syllables)
+            : console.log('word')
+            // divideByLength(word) //this returns UnhandledPromiseRejection warning. Might need to use catch??
+      }) //replace result in array
     }
 }
-
-cleanCaptions(data)
