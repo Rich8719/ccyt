@@ -1,9 +1,9 @@
 import React, { Component } from "react"
-import Video from "./components/Video"
+// import Video from "./components/Video"
 import getId from "./components/YouTubeId"
 import { getCaptions } from "./components/CleanData";
-import faceTest from "./components/FaceTrack.js"
 import "./App.css"
+import FaceTest from './components/FaceTrack'
 
 class App extends Component {
   constructor(props) {
@@ -35,14 +35,11 @@ class App extends Component {
       })
   }
 
-  componentDidMount() {
-    faceTest()
-  }
-
   render() {
     return (
       <div className="App">
-        {this.state.loadVideo ? (
+        <FaceTest/>
+        {/* {this.state.loadVideo ? (
           <>
             <Video id={this.state.id} captions={this.state.captions}/>
           </>
@@ -52,7 +49,7 @@ class App extends Component {
             <input id="url" type="text" onChange={this.handleChange} />
             <button type="submit">Submit</button>
           </form>
-        )}
+        )} */}
       </div>
     )
   }
