@@ -1,8 +1,9 @@
-// Returns captions and soundEffect arrays, stripped of special characters, and adds newspeaker boolean to captions.
+//Returns captions and soundEffect arrays, stripped of special characters, and adds newspeaker boolean to captions.
 
-// import splitSyllables from './SyllableSplit'
+const numOfSyllables = require('syllable')
+const splitSyllables = require('./SplitSyllables')
 
-//test data	
+//test data
 let data = [
   {
     start: "1.084",
@@ -193,126 +194,73 @@ let data = [
     text: "because it's time to catch\nthis disco bastard."
   }
 ]
-//returns word between two characters
-const snipWord = (str, firstChar, secondChar) => {
-  if (str.indexOf(firstChar) !== -1 && str.indexOf(secondChar) !== -1) {
-    return str.slice(str.indexOf(firstChar), str.indexOf(secondChar) + 1)
+
+const getCaptions = (rawCaptions) => {
+  let captions = []
+
+  rawCaptions.forEach(rawCaption => {
+    const removeSounds = rawCaption.text.replace(/\[.*?\]/g, '')
+    const removeSrtWords = removeSounds.replace('all:', '') //delete "All:" srt notation
+    const removeChars = deleteSpecialChars(removeSrtWords)
+    const words = removeChars.split(' ').filter(element => element.length !== 0)//splits characters and removes empty strings 
+    const duration = Math.ceil(rawCaption.dur * 1000 / words.length)
+    const minSplitLength = 8 // words this long or longer are split into syllables
+
+    words.forEach((word, index) => {
+      captions.push({
+        text: word,
+        start: Math.ceil((rawCaption.start * 1000) + index * duration),
+        dur: duration,
+        newSpeaker: index !== 0 ? false : addNewSpeakerElement(rawCaption.text),
+        numberOfSyllables: numOfSyllables(word),
+        syllables: [
+          word.length >= minSplitLength ? splitSyllables.splitSyllables(word) : word
+        ]
+      })
+    })
+  })
+}
+
+const getSounds = (data) => {
+  const soundElements = data.filter(element => element.text.indexOf('[') > - 1)
+  const sounds = []
+
+  soundElements.forEach(element => {
+    let sound = snipWord(element.text, "[", "]")
+    sounds.push({
+      sound: sound,
+      start: element.start * 1000,
+      dur: element.dur * 1000
+    })
+  })
+
+  return sounds
+}
+
+const deleteSpecialChars = (text) => {
+  //don't strip hyphens from hyphenated words
+  let hyphenatedWords = text.match(/((?:\w+-)+\w+)/g)
+  if (hyphenatedWords) {
+    return text.replace(/[^a-z A-Z'-., ]/g, ' ')
+  } else {
+    return text.replace(/[^a-z A-Z'., ]/g, ' ')
   }
 }
 
-const convertToMs = seconds => {
-  const ms = seconds * 1000
-  return ms
+const addNewSpeakerElement = text => {
+  return (text.indexOf("- ") > -1) |
+    (text.indexOf("all:") > -1) |
+    (text.indexOf("both:") > -1)
+    ? true
+    : false
 }
 
-// removes unwanted character from text
-// reformat so that it removes multiple characters ??
-const removeCharacter = (element, findCharacter, replaceCharacters, replaceWith) => 
-  (element.indexOf(findCharacter) > -1)
-    ? element.replace(replaceCharacters, replaceWith)
-    : element
-
-const deleteSpecialChars = (data) => {
-  let words = []
-
-  data.forEach(element => {
-    const removeSounds = removeCharacter(element.text, "[", /\[.*?\]/g, "")
-    const removeBreaks = removeCharacter(removeSounds, "\n", "\n", " ")
-    const removeHyphens = removeCharacter(removeBreaks, "-", /[-]/g, "")
-    const removeAll = removeCharacter(removeHyphens, "all:", "all:", "") //All refers to notation in captions for all speakers
-    const word = removeAll
-
-    words.push({
-      text: word.trim(),
-      start: convertToMs(element.start),
-      dur: convertToMs(element.dur),
-      newSpeaker: element.newSpeaker
-    })
-  })
-
-  return words
+//returns word between two characters
+const snipWord = (str, firstChar, secondChar) => {
+  if (str.indexOf(firstChar) !== -1 && str.indexOf(secondChar) !== -1) {
+    return str.slice(str.indexOf(firstChar) + 1, str.indexOf(secondChar))
+  }
 }
 
-// "- ", "both", or "all:" indicates a new speaker in json. This function adds newSpeaker boolean to words array.
-const addNewSpeakerElement = data => {
-  // let speakers = splitSpeakers(data)
-
-  data.forEach(element => {
-    (element.text.indexOf("- ") > -1) |
-      (element.text.indexOf("all:") > -1) |
-      (element.text.indexOf("both:") > -1)
-      ? (element.newSpeaker = true)
-      : (element.newSpeaker = false)
-  })
-  return data
-}
-
-const wordCount = str => {
-  return str.split(" ").length
-}
-
-const buildCaptionsArray = data => {
-  let captions = []
-  data.forEach((words) => {
-    let duration = words.dur / wordCount(words.text)
-    words.text.split(' ').forEach((element, index) => {
-      captions.push({
-        text: element,
-        start: Math.ceil(words.start + index * duration),
-        end: words.start + words.dur,
-        dur: duration,
-        newSpeaker: index !== 0 ? false : words.newSpeaker
-      })
-    })
-  })
-  return captions.filter(element => element.text.length !== 0) //removes empty text elements
-}
-
-const syllable = require('syllable')
-const split = require('./SyllableSplit')
-
-const splitBySyllables = (data) => {
-  const minSplitLength = 8 // words this long or longer are split
-  data.forEach(element => {
-    const word = element.text
-    const numOfSyllables = syllable(word)
-    const wordLength = word.replace(/[^a-zA-Z]/g, '').length
-    console.log(element, numOfSyllables, wordLength, minSplitLength)
-    // splitSyllables(word, numOfSyllables, wordLength, minSplitLength)
-  })
-}
-
-//returns formatted and clean array of text, start, and duration
-const getCaptions = (data) => {
-  const addSpeaker = addNewSpeakerElement(data)
-  const deleteChars = deleteSpecialChars(addSpeaker)
-  const cleanData = buildCaptionsArray(deleteChars)
-  const splitSyllables = splitBySyllables(cleanData)
-  
-  return splitSyllables 
-}
-
-//returns sound array with start times and duration and formats
-const getSounds = (data) => {
-  const soundItems = data.filter(element => element.text.indexOf('[') > -1)
-  let soundArray = []
-  
-  soundItems.forEach(element => {
-    let sound = snipWord(element.text, "[", "]")
-    soundArray.push({
-      sound: removeCharacter(
-        removeCharacter(sound, "[", "[", ""),
-        "]",
-        "]",
-        ""
-        ),
-        start: convertToMs(element.start),
-        dur: convertToMs(element.dur)
-      })
-  })
-    return soundArray
-}
-  
 getCaptions(data)
-
-// export { getCaptions, getSounds}
+// getSounds(data)

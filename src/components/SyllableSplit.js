@@ -1,5 +1,4 @@
 require('dotenv').config()
-
 const pluralize = require('pluralize')
 const unirest = require('unirest')
 const apiKey = process.env.REACT_APP_WORDS_API_KEY
@@ -126,8 +125,6 @@ const cleanSyllables = async (originalWord, numOfSyllables) => {
 }
 
 const build = (syllables) => {
-  console.log(syllables)
+  // console.log(syllables);
   return syllables
 }
-
-// export splitSyllables
