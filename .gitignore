@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+/src/components/OLD-Syllables.js
 
 # production
 /build

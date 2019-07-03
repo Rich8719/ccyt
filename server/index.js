@@ -2,7 +2,7 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const cors = require("cors")
 const pino = require("express-pino-logger")()
-const api = require("./api.js")
+const scrape = require("./scrapeCaptions.js")
 const app = express()
 
 const corsOptions = {
@@ -13,11 +13,12 @@ app.use(cors(corsOptions))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(pino)
 
-app.get("/api/id", (req, res) => {
-  api.getSubtitles({ videoID: req.query.id }).then(captions => {
-    res.setHeader("Content-Type", "application/json")
-    res.send(captions)
-  })
+app.get("/scrape/id", (req, res) => {
+  scrape.getSubtitles({ videoID: req.query.id })
+    .then(captions => {
+      res.setHeader("Content-Type", "application/json")
+      res.send(captions)
+    })
 })
 
 app.listen(4000, () =>
