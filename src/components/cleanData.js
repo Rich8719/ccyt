@@ -1,10 +1,7 @@
 //Returns captions and soundEffect arrays, stripped of special characters, and adds newspeaker boolean to captions.
 
-// import syllable from 'syllable'
-// import { splitSyllables } from './SplitSyllables.js'
-
-const syllable = require('syllable')
-const splitSyllables = require('./SplitSyllables')
+import syllable from 'syllable'
+import { splitSyllables } from './SplitSyllables.js'
 
 //test data
 let data = [
@@ -206,7 +203,6 @@ const getCaptions = async (rawCaptions) => {
     const removeSounds = rawCaption.text.replace(/\[.*?\]/g, '')
     const removeSrtWords = removeSounds.replace('all:', '') //delete "All:" srt notation
     const removeChars = deleteSpecialChars(removeSrtWords)
-    // console.log(removeChars)
     const words = removeChars.split(' ').filter(element => element.length !== 0)//splits characters and removes empty strings 
     const duration = Math.ceil(rawCaption.dur * 1000 / words.length)
 
@@ -214,9 +210,7 @@ const getCaptions = async (rawCaptions) => {
       const word = words[index];      
       const minSplitLength = 8 // words this long or longer are split into syllables
       const wordLength = word.replace(/[^a-z A-Z' ]/g, '').length //removes punctuation for split length
-      const syllables = wordLength >= minSplitLength && syllable(word >= 2) ?
-        await splitSyllables.splitSyllables(word, syllable(word))
-        : word
+      const syllables = wordLength >= minSplitLength && syllable(word >= 2) ? await splitSyllables(word, syllable(word)) : word
 
       captions.push({
         text: word,
@@ -224,7 +218,7 @@ const getCaptions = async (rawCaptions) => {
         dur: duration,
         newSpeaker: index !== 0 ? false : addNewSpeakerElement(rawCaption.text),
         numberOfSyllables: syllable(word),
-        syllables: [ syllables ]
+        syllables: syllables
       })
     }
   }
@@ -276,5 +270,4 @@ const snipWord = (str, firstChar, secondChar) => {
 
 getCaptions(data)
 
-// export { getCaptions, getSounds }
-module.exports = { getCaptions, getSounds }
+export { getCaptions, getSounds }

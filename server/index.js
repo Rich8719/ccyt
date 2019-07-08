@@ -3,6 +3,7 @@ const bodyParser = require("body-parser")
 const cors = require("cors")
 const pino = require("express-pino-logger")()
 const scrape = require("./scrapeCaptions.js")
+const api = require("./api")
 const app = express()
 
 const corsOptions = {
@@ -19,6 +20,10 @@ app.get("/scrape/id", (req, res) => {
       res.setHeader("Content-Type", "application/json")
       res.send(captions)
     })
+})
+
+app.get("/api/syllables", (req, res) => {
+  api.getSyllables(req.query.word, res)
 })
 
 app.listen(4000, () =>

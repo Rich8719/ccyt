@@ -1,30 +1,22 @@
-// import dotenv from 'dotenv'
-// import pluralize from 'pluralize'
-// import unirest from 'unirest'
-// const apiKey = process.env.REACT_APP_WORDS_API_KEY
-// dotenv.config()
-
-require('dotenv').config()
-const pluralize = require('pluralize')
-const unirest = require('unirest')
-const apiKey = process.env.REACT_APP_WORDS_API_KEY
+import pluralize from 'pluralize'
 
 const getSyllables = (word, numOfSyllables) => {
-  const url = `https://wordsapiv1.p.mashape.com/words/${word}`
-  return unirest.get(url)
-    .header("X-Mashape-Key", apiKey)
-    .header("Accept", "application/json")
+  return fetch(`http://localhost:4000/api/syllables?word=${encodeURIComponent(word)}`)
+    .then(response => response.json())
     .then(result => {
-      // console.log(word, result.status, result.body)
-      return result.status === 200 && typeof result.body.syllables !== 'undefined' ?
+      return result.body.success === true ?
         result.body.syllables.list
         : divideBySyllables(word, numOfSyllables)
+    })
+    .catch(error => {
+      console.log(error);      
     })
 }
 
 const splitSyllables = async (originalWord, numOfSyllables) => {
   const word = cleanData(originalWord)
   let result = await getSyllables(word, numOfSyllables)
+  console.log(result)
   return result
 }
 
@@ -64,7 +56,7 @@ const divideBySyllables = (word, numOfSyllables) => {
   return syllables
 }
 
-// //creates faux number of syllables for words longer than 8 characters that have only one syllable
+//creates faux number of syllables for words longer than 8 characters that have only one syllable
 const generateNumOfSyllables = (word) => {
   const half = Math.ceil(word.length / 2)
   const maxLength = half >= 5 ? 5 : half
@@ -72,5 +64,4 @@ const generateNumOfSyllables = (word) => {
   divideBySyllables(word, numOfSyllables)
 }
 
-module.exports = { splitSyllables }
-// export { splitSyllables }
+export { splitSyllables }
