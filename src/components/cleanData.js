@@ -222,7 +222,6 @@ const getCaptions = async (rawCaptions) => {
       })
     }
   }
-  console.log(captions)
   return captions
 }
 
@@ -267,7 +266,5 @@ const snipWord = (str, firstChar, secondChar) => {
     return str.slice(str.indexOf(firstChar) + 1, str.indexOf(secondChar))
   }
 }
-
-getCaptions(data)
 
 export { getCaptions, getSounds }

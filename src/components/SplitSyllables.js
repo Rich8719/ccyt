@@ -1,4 +1,5 @@
 import pluralize from 'pluralize'
+import { correctSyllables, isUpperCase } from "./CorrectSyllables";
 
 const getSyllables = (word, numOfSyllables) => {
   return fetch(`http://localhost:4000/api/syllables?word=${encodeURIComponent(word)}`)
@@ -15,8 +16,14 @@ const getSyllables = (word, numOfSyllables) => {
 
 const splitSyllables = async (originalWord, numOfSyllables) => {
   const word = cleanData(originalWord)
-  let result = await getSyllables(word, numOfSyllables)
-  console.log(result)
+  let syllables = await getSyllables(word, numOfSyllables)
+
+  if (pluralize.isPlural(originalWord) || isUpperCase(originalWord)) {
+    correctSyllables(syllables, originalWord)
+  }
+
+  let result = pluralize.isPlural(originalWord) || isUpperCase(originalWord) ? correctSyllables(syllables, originalWord, numOfSyllables) : syllables
+
   return result
 }
 
@@ -64,4 +71,4 @@ const generateNumOfSyllables = (word) => {
   divideBySyllables(word, numOfSyllables)
 }
 
-export { splitSyllables }
+export { splitSyllables, divideBySyllables }
