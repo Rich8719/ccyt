@@ -14,22 +14,37 @@ const getCaptions = async (rawCaptions) => {
     const words = removeChars.split(' ').filter(element => element.length !== 0)//splits characters and removes empty strings 
     const duration = Math.ceil(rawCaption.dur * 1000 / words.length)
 
-    for (let index = 0; index < words.length; index++) {
-      const word = words[index];      
+    for (let j = 0; j < words.length; j++) {
+      const word = words[j];      
       const minSplitLength = 8 // words this long or longer are split into syllables
       const wordLength = word.replace(/[^a-z A-Z' ]/g, '').length //removes punctuation for split length
-      const syllables = wordLength >= minSplitLength && syllable(word >= 2) ? await splitSyllables(word, syllable(word)) : word
+      const numberOfSyllables = syllable(word)
 
-      captions.push({
-        text: word,
-        start: Math.ceil((rawCaption.start * 1000) + index * duration),
-        dur: duration,
-        newSpeaker: index !== 0 ? false : addNewSpeakerElement(rawCaption.text),
-        numberOfSyllables: syllable(word),
-        syllables: syllables
-      })
+      if (wordLength >= minSplitLength && syllable(word >= 2)) { //push syllables to array
+        const syllables = await splitSyllables(word, syllable(word))
+        const syllableDur = Math.floor(duration / numberOfSyllables) 
+
+        for (let k = 0; k < syllables.length; k++) {
+          const syllable = syllables[k];
+          captions.push({
+            text: syllable,
+            start: Math.ceil((rawCaption.start * 1000) + (j * duration) + k * syllableDur),
+            dur: syllableDur,
+            newSpeaker: j !== 0 ? false : addNewSpeakerElement(rawCaption.text)
+          })
+        }
+      } else {
+        captions.push({ //push full words to array
+          text: word,
+          start: Math.ceil((rawCaption.start * 1000) + j * duration),
+          dur: duration,
+          newSpeaker: j !== 0 ? false : addNewSpeakerElement(rawCaption.text)
+        })
+      }
     }
   }
+  console.log(captions);
+  
   return captions
 }
 
