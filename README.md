@@ -30,8 +30,13 @@ Takes the raw YouTube subtitles, and formats it to be read by the app. Returns t
 }
 
 ```
+### SplitSyllables
+Takes words longer than the minimum split length (8) and divides them by the number of syllables in the word, or splits them into smaller chunks if there is only one syllable
 
-### Captions.js
+### CorrectSyllables
+The api used to split syllables requires words to be lowercase and singular. This component edits the returned syllables array to match the original word. *Note this does not include adding back punctuation, but his might be something to add in the future.*
+
+### Captions
 Child of Video. Accepts the cleaned Captions Data. Loops through words in data on play. Sets timing of words. Renders words on screen.
 
 ## SpeechBubble
@@ -57,5 +62,8 @@ Uses:
 * cors (to allow cross origin)
 * express pino logger (for better server logging)
 
+### scrapeCaptions.js
+Scrapes the subtitles of a youtube clip
+
 ### API
-API is actually a webscrapper that get's the subtitles of a youtube clip
+Gets syllables from wordsapi
