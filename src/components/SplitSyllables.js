@@ -22,8 +22,11 @@ const splitSyllables = async (originalWord, numOfSyllables) => {
     correctSyllables(syllables, originalWord)
   }
 
-  let result = pluralize.isPlural(originalWord) || isUpperCase(originalWord) ? correctSyllables(syllables, originalWord, numOfSyllables) : syllables
+  let cleanResults = pluralize.isPlural(originalWord) || isUpperCase(originalWord) ? correctSyllables(syllables, originalWord, numOfSyllables) : syllables
 
+  let result = addHypens(cleanResults)
+  
+  // console.log(result);
   return result
 }
 
@@ -69,6 +72,28 @@ const generateNumOfSyllables = (word) => {
   const maxLength = half >= 5 ? 5 : half
   const numOfSyllables = word.length / maxLength
   divideBySyllables(word, numOfSyllables)
+}
+
+// adds hypens between syllables: ex-er-cise
+const addHypens = (syllables) => {
+  let result = []
+  for (let i = 0; i < syllables.length; i++) {
+    const syllable = syllables[i];
+    if (i === 0) {
+      result.push(
+        syllable + '-'
+      )
+    } else if (i === syllables.length - 1) {
+      result.push(
+        '-' + syllable
+      )
+    } else {
+      result.push(
+        '-' + syllable + '-'
+      )
+    }
+  }
+  return result
 }
 
 export { splitSyllables, divideBySyllables }

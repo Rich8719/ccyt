@@ -11,11 +11,14 @@ class SpeechBubble extends Component {
     }
   }
 
-  getSpeechBubble = () => {
-    let position = 'ml'
+  getSpeechBubble = (position) => {
     this.setState({
       bubbleStyle: getStyle(position)
     })
+  }
+
+  componentDidMount() {
+    this.getSpeechBubble('ml')
   }
   
   render() {
@@ -34,8 +37,7 @@ class SpeechBubble extends Component {
         </div>
         <div className="sound-effects">
           {this.props.soundEffect}
-        </div> */}
-        <button onClick={this.getSpeechBubble}>TEST BUBBLES</button>
+        </div>
       </div>
     )
   }

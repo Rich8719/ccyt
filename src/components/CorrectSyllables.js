@@ -1,6 +1,8 @@
-// the syllables api requires words to be lower case and sinuglar. This functin returns the split syllables to their original plural state.
-import { divideBySyllables } from "./SplitSyllables";
+// the syllables api requires words to be lowercase and sinuglar. This functin returns the split syllables to their original capitalized and punctuated states.
 
+import { divideBySyllables } from "./SplitSyllables"
+
+//simplify correctSyllables
 const correctSyllables = (syllables, originalWord, numOfSyllables) => {
   const word = originalWord.replace(/[.,/#!?$%^&*;:{}=\-_`~()]/g, "") //removes punctuation
 
@@ -23,7 +25,7 @@ const correctSyllables = (syllables, originalWord, numOfSyllables) => {
   }
   
   result = result.join('') === word ? result : divideBySyllables(word, numOfSyllables)
-
+  
   return result  
 }
 
