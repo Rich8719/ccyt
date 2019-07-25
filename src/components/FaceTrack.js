@@ -21,7 +21,7 @@ class FaceTest extends Component {
   }
 
   track = async () => {
-    const input = document.getElementById('image')
+    const input = document.getElementById('input')
     const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.8 })
     const detect = await faceapi.detectAllFaces(input, options)
     console.log(detect)
@@ -31,14 +31,14 @@ class FaceTest extends Component {
     return (
       <>
         <button onClick = {this.track}>face test</button>
-        <img width="500px" alt="holt" id="image" src= "terry.png"/>
-      {/* <ReactPlayer
+        {/* <img width="500px" alt="holt" id="image" src= "terry.png"/> */}
+      <ReactPlayer
         url = 'https://www.youtube.com/watch?v=r0YA2fBgBzI'
         muted = {true}
         loop = {true}
-        onPlay = {this.track}
-        id = 'video'
-      /> */}
+        onPlay={this.track}
+        id = {'input'}
+      />
       </>
     )
   }

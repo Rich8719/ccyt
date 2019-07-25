@@ -43,8 +43,6 @@ const getCaptions = async (rawCaptions) => {
       }
     }
   }
-  console.log(captions);
-  
   return captions
 }
 
